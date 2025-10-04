@@ -1,0 +1,73 @@
+with 
+agents_data as 
+(
+    select 
+        1 as agent_id
+        ,'company_1' as company_name
+        ,0.2 as commission 
+    union all 
+    select 
+        2 as agent_id
+        ,'company_1' as company_name
+        ,0.2 as commission 
+    union all 
+    select 
+        3 as agent_id
+        ,'company_2' as company_name
+        ,0.15 as commission 
+    union all 
+    select 
+        4 as agent_id
+        ,'company_2' as company_name
+        ,0.15 as commission
+     union all 
+    select 
+        5 as agent_id
+        ,'company_2' as company_name
+        ,0.15 as commission
+)
+,adv_data as 
+(
+    select 
+        454 as adv_id 
+        ,toDate('2025-08-09') as adv_open_dt
+        ,1 as agent_id
+    union all 
+    select 
+        535 as adv_id 
+        ,toDate('2025-08-10') as adv_open_dt
+        ,2 as agent_id
+    union all 
+    select 
+        125 as adv_id 
+        ,toDate('2025-08-10') as adv_open_dt
+        ,2 as agent_id
+    union all 
+    select 
+        231 as adv_id 
+        ,toDate('2025-08-10') as adv_open_dt
+        ,3 as agent_id
+    union all 
+    select 
+        385 as adv_id 
+        ,toDate('2025-08-10') as adv_open_dt
+        ,4 as agent_id
+    union all 
+    select 
+        639 as adv_id 
+        ,toDate('2025-08-10') as adv_open_dt
+        ,1 as agent_id
+)
+
+
+select 
+    ag.agent_id
+    ,count(case when adv.agent_id > 0 then adv.adv_id end) as cnt_adv
+from
+    agents_data as ag 
+    left join adv_data as adv on ag.agent_id = adv.agent_id 
+group by ag.agent_id 
+having cnt_adv > (select
+                    count (case when adv.agent_id > 0 then adv.adv_id end) / count(distinct(ag.agent_id))
+                    from agents_data as ag
+                    left join adv_data as adv on ag.agent_id = adv.agent_id)                                  
